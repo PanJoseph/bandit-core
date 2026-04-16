@@ -34,41 +34,34 @@ function addEdge(nodes, node1, node2) {
   return null;
 }
 
-function isCircularHelper(nodes, node, visited, stack) {
-  if (!visited[node]) {
-    visited[node] = true;
-    stack[node] = true;
+function isCircular(nodes) {
+  const visited = {};
+  const stack = [];
 
-    const siblings = nodes[node];
+  for (let node in nodes) {
+    const connectedNodes = {};
 
-    for (let idx = 0; idx < siblings.length; idx += 1) {
-      const currentNode = siblings[idx];
+    if (visited[node] == null) {
+      stack.push(node);
+    }
 
-      if (
-        (!visited[currentNode] && isCircularHelper(nodes, currentNode, visited, stack)) ||
-        stack[currentNode]
-      ) {
-        return true;
+    while (stack.length != 0) {
+      const node = stack.pop();
+
+      if (connectedNodes[node] != null) {
+        return { isCircular: true, node };
+      }
+
+      visited[node] = true;
+      connectedNodes[node] = true;
+
+      for (let child of nodes[node]) {
+        stack.push(child);
       }
     }
+
+    return { isCircular: false, node: null };
   }
-
-  stack[node] = false;
-  return false;
-}
-
-function isCircular(nodes) {
-  const nodeKeys = Object.keys(nodes);
-  const visited = {};
-  const stack = {};
-
-  for (let idx = 0; idx < nodeKeys.length; idx += 1) {
-    const node = nodeKeys[idx];
-
-    if (isCircularHelper(nodes, node, visited, stack)) return { isCircular: true, node };
-  }
-
-  return { isCircular: false };
 }
 
 function Graph() {
